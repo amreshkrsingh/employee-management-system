@@ -3,14 +3,14 @@ package com.example.employee.dto;
 
 import java.time.LocalDateTime;
 
-public class ApiResponse<T> {
+public class ApiResponse {
 
     private LocalDateTime timestamp;
     private String message;
-    private T data;
+    private Object data;
     private int status;
 
-    public ApiResponse(String message, T data, int status) {
+    public ApiResponse(String message, Object data, int status) {
         this.timestamp = LocalDateTime.now();
         this.message = message;
         this.data = data;
@@ -25,7 +25,7 @@ public class ApiResponse<T> {
         return message;
     }
 
-    public T getData() {
+    public Object getData() {
         return data;
     }
 
