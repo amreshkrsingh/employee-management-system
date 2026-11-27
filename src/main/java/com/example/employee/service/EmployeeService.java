@@ -4,26 +4,125 @@ package com.example.employee.service;
 import com.example.employee.dto.EmployeeRequest;
 import com.example.employee.dto.EmployeePatchRequest;
 import com.example.employee.entity.Employee;
+import com.example.employee.exception.DuplicateEmailException;
+import com.example.employee.exception.ResourceNotFoundException;
+import com.example.employee.repository.EmployeeRepository;
+
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-public interface EmployeeService {
+@Service
+public class EmployeeService {
 
-    Employee createEmployee(EmployeeRequest request);
+    private final EmployeeRepository employeeRepository;
 
-    List<Employee> getAllEmployees();
+    public EmployeeService(EmployeeRepository employeeRepository) {
+        this.employeeRepository = employeeRepository;
+    }
 
-    Employee getEmployeeById(Long id);
+    // Create Employee
+    public Employee createEmployee(EmployeeRequest request) {
 
-    Employee updateEmployee(Long id, EmployeeRequest request);
+        if (employeeRepository.existsByEmail(request.getEmail())) {
+            throw new DuplicateEmailException("Email already exists");
+        }
 
-    Employee patchEmployee(Long id, EmployeePatchRequest request);
+        Employee employee = new Employee();
 
-    void deleteEmployee(Long id);
+        employee.setName(request.getName());
+        employee.setEmail(request.getEmail());
+        employee.setDepartment(request.getDepartment());
+        employee.setSalary(request.getSalary());
+        employee.setJoiningDate(request.getJoiningDate());
 
-    List<Employee> getEmployeesByDepartment(String department);
+        return employeeRepository.save(employee);
+    }
 
-    List<Employee> getEmployeesBySalary(double amount);
+    // Get All Employees
+    public List<Employee> getAllEmployees() {
+        return employeeRepository.findAll();
+    }
 
-    List<Employee> searchEmployeesByName(String name);
+    // Get Employee By ID
+    public Employee getEmployeeById(Long id) {
+        return employeeRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Employee not found with ID: " + id));
+    }
+
+    // Full Update
+    public Employee updateEmployee(Long id, EmployeeRequest request) {
+
+        Employee employee = getEmployeeById(id);
+
+        if (!employee.getEmail().equalsIgnoreCase(request.getEmail())
+                && employeeRepository.existsByEmail(request.getEmail())) {
+            throw new DuplicateEmailException("Email already exists");
+        }
+
+        employee.setName(request.getName());
+        employee.setEmail(request.getEmail());
+        employee.setDepartment(request.getDepartment());
+        employee.setSalary(request.getSalary());
+        employee.setJoiningDate(request.getJoiningDate());
+
+        return employeeRepository.save(employee);
+    }
+
+    // Partial Update
+    public Employee patchEmployee(Long id, EmployeePatchRequest request) {
+
+        Employee employee = getEmployeeById(id);
+
+        if (request.getName() != null) {
+            employee.setName(request.getName());
+        }
+
+        if (request.getEmail() != null) {
+
+            if (!employee.getEmail().equalsIgnoreCase(request.getEmail())
+                    && employeeRepository.existsByEmail(request.getEmail())) {
+                throw new DuplicateEmailException("Email already exists");
+            }
+
+            employee.setEmail(request.getEmail());
+        }
+
+        if (request.getDepartment() != null) {
+            employee.setDepartment(request.getDepartment());
+        }
+
+        if (request.getSalary() != null) {
+            employee.setSalary(request.getSalary());
+        }
+
+        if (request.getJoiningDate() != null) {
+            employee.setJoiningDate(request.getJoiningDate());
+        }
+
+        return employeeRepository.save(employee);
+    }
+
+    // Delete Employee
+    public void deleteEmployee(Long id) {
+        Employee employee = getEmployeeById(id);
+        employeeRepository.delete(employee);
+    }
+
+    // Get Employees By Department
+    public List<Employee> getEmployeesByDepartment(String department) {
+        return employeeRepository.findByDepartmentIgnoreCase(department);
+    }
+
+    // Get Employees By Salary
+    public List<Employee> getEmployeesBySalary(double amount) {
+        return employeeRepository.findBySalaryGreaterThan(amount);
+    }
+
+    // Search Employees By Name
+    public List<Employee> searchEmployeesByName(String name) {
+        return employeeRepository.findByNameContainingIgnoreCase(name);
+    }
 }

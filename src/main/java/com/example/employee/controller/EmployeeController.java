@@ -26,121 +26,121 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Employee>> createEmployee(
+    public ResponseEntity<ApiResponse> createEmployee(
             @Valid @RequestBody EmployeeRequest request) {
 
         Employee employee = employeeService.createEmployee(request);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ApiResponse<>(
+                .body(new ApiResponse(
                         "Employee created successfully",
                         employee,
                         201));
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<Employee>>> getAllEmployees() {
+    public ResponseEntity<ApiResponse> getAllEmployees() {
 
         List<Employee> employees = employeeService.getAllEmployees();
 
         return ResponseEntity.ok(
-                new ApiResponse<>(
+                new ApiResponse(
                         "Employees fetched successfully",
                         employees,
                         200));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<Employee>> getEmployeeById(
+    public ResponseEntity<ApiResponse> getEmployeeById(
             @PathVariable Long id) {
 
         Employee employee = employeeService.getEmployeeById(id);
 
         return ResponseEntity.ok(
-                new ApiResponse<>(
+                new ApiResponse(
                         "Employee fetched successfully",
                         employee,
                         200));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Employee>> updateEmployee(
+    public ResponseEntity<ApiResponse> updateEmployee(
             @PathVariable Long id,
             @Valid @RequestBody EmployeeRequest request) {
 
         Employee employee = employeeService.updateEmployee(id, request);
 
         return ResponseEntity.ok(
-                new ApiResponse<>(
+                new ApiResponse(
                         "Employee updated successfully",
                         employee,
                         200));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ApiResponse<Employee>> patchEmployee(
+    public ResponseEntity<ApiResponse> patchEmployee(
             @PathVariable Long id,
             @Valid @RequestBody EmployeePatchRequest request) {
 
         Employee employee = employeeService.patchEmployee(id, request);
 
         return ResponseEntity.ok(
-                new ApiResponse<>(
+                new ApiResponse(
                         "Employee partially updated successfully",
                         employee,
                         200));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteEmployee(
+    public ResponseEntity<ApiResponse> deleteEmployee(
             @PathVariable Long id) {
 
         employeeService.deleteEmployee(id);
 
         return ResponseEntity.ok(
-                new ApiResponse<>(
+                new ApiResponse(
                         "Employee deleted successfully",
                         null,
                         200));
     }
 
     @GetMapping("/department/{dept}")
-    public ResponseEntity<ApiResponse<List<Employee>>> getByDepartment(
+    public ResponseEntity<ApiResponse> getByDepartment(
             @PathVariable("dept") String department) {
 
         List<Employee> employees =
                 employeeService.getEmployeesByDepartment(department);
 
         return ResponseEntity.ok(
-                new ApiResponse<>(
+                new ApiResponse(
                         "Employees fetched by department",
                         employees,
                         200));
     }
 
     @GetMapping("/salary/{amount}")
-    public ResponseEntity<ApiResponse<List<Employee>>> getBySalary(
+    public ResponseEntity<ApiResponse> getBySalary(
             @PathVariable double amount) {
 
         List<Employee> employees =
                 employeeService.getEmployeesBySalary(amount);
 
         return ResponseEntity.ok(
-                new ApiResponse<>(
+                new ApiResponse(
                         "Employees fetched by salary",
                         employees,
                         200));
     }
 
     @GetMapping("/search")
-    public ResponseEntity<ApiResponse<List<Employee>>> searchByName(
+    public ResponseEntity<ApiResponse> searchByName(
             @RequestParam String name) {
 
         List<Employee> employees =
                 employeeService.searchEmployeesByName(name);
 
         return ResponseEntity.ok(
-                new ApiResponse<>(
+                new ApiResponse(
                         "Employees searched successfully",
                         employees,
                         200));
